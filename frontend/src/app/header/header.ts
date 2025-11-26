@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { ModalService } from '../services/modal-service';
+import { Component, output } from '@angular/core';
+
 
 @Component({
   selector: 'app-header',
@@ -8,14 +8,14 @@ import { ModalService } from '../services/modal-service';
   styleUrl: './header.scss',
 })
 export class Header {
-  constructor(private modalService: ModalService) {}
+  onHeaderClick = output<String>(); 
 
+  // Este método emite un evento que el AppComponent captura
   openLogin(): void {
-    this.modalService.openModal('login');
+    this.onHeaderClick.emit('login');
   }
 
-  openRegister(): void {
-    // Por defecto, abrir registro de voluntarios
-    this.modalService.openModal('volunteer'); 
+  openRegister():void{
+    this.onHeaderClick.emit('register');
   }
 }

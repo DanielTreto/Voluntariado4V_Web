@@ -1,27 +1,25 @@
 @import 'bootstrap/dist/css/bootstrap.css';
-/* Definición de colores de Cuatrovientos basados en tu logo y página */
+/* src/styles.scss */
+
+/* Variables CSS para los colores principales */
 :root {
-  --color-cuatrovientos-main-blue: #1a467b;
-  /* Azul oscuro principal, del logo */
-  --color-cuatrovientos-light-blue: #4299e1;
-  /* Azul claro para acentos y botones */
-  --color-cuatrovientos-dark-bg: #0f172a;
-  /* Fondo oscuro casi negro */
-  --color-cuatrovientos-gray-text: #e2e8f0;
-  /* Texto gris claro para fondos oscuros */
-  --color-white: #ffffff;
-  --color-light-gray-bg: #f8fafc;
-  /* Fondo blanco-grisáceo para secciones */
+    --color-cuatrovientos-main-blue: #1A467B; 
+    --color-cuatrovientos-light-blue: #4299E1;
+    --color-cuatrovientos-dark-bg: #0F172A;
+    --color-cuatrovientos-gray-text: #E2E8F0;
+    --color-white: #FFFFFF;
+    --color-light-gray-bg: #F8FAFC;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--color-light-gray-bg);
-  /* Fondo principal más claro */
-  color: #333;
-  /* Texto oscuro por defecto */
-  overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-light-gray-bg);
+    color: #333;
+    overflow-x: hidden;
 }
+
+/* ⚠️ Importar Bootstrap DEBE ir ANTES de tus reglas personalizadas ⚠️ */
+@import 'bootstrap/dist/css/bootstrap.css';
 
 /* Configuración de Tailwind para extender con los colores de Cuatrovientos */
 @layer base {
@@ -255,4 +253,116 @@ body {
 .icon-40 {
     width: 40px;
     height: 40px;
+}
+
+/* En src/styles.scss */
+.font-max-bold {
+    /* Corresponde a font-extrabold en Tailwind */
+    font-weight: 800 !important; 
+    /* Si quieres el peso MÁXIMO, usa 900 */
+    /* font-weight: 900 !important; */
+}
+/* src/styles.scss (Añadir para los estilos exactos del modal) */
+
+/* Estilos para los Inputs con Ícono */
+.custom-input-group .custom-icon-span {
+    background-color: white;
+    border-right: none;
+    border-color: #ced4da; /* Color gris estándar de Bootstrap */
+    color: #a0aec0; /* Color del icono */
+}
+
+/* Foco del Input: Quitar el azul por defecto de Bootstrap y poner el color de Cuatrovientos */
+.custom-input-group .form-control:focus {
+    border-color: var(--color-cuatrovientos-main-blue) !important;
+    box-shadow: 0 0 0 0.25rem rgba(26, 70, 123, 0.25) !important; /* Usar el RGB del azul principal con transparencia */
+}
+
+/* Esconder el fondo del input group en focus */
+.custom-input-group .form-control {
+    border-left: none;
+}
+
+/* Estilo del Botón Sign In (Blanco con Sombra) */
+.custom-sign-in-btn {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ced4da;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: background-color 0.15s ease-in-out;
+}
+
+.custom-sign-in-btn:hover {
+    background-color: #f8f9fa; /* Gris muy claro al pasar el ratón */
+    border-color: #ced4da;
+}
+
+/* src/styles.scss */
+
+/* ---------------------------------------------------- */
+/* 1. CENTRADO BÁSICO Y OVERLAY (Reemplaza d-flex justify-content-center) */
+/* ---------------------------------------------------- */
+
+.modal-overlay-container {
+    /* Clases de Bootstrap/Tailwind: fixed inset-0 */
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    /* Asegura que el contenido esté centrado si no usamos d-flex */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background-color: rgba(0, 0, 0, 0.5); /* Color de fondo del overlay */
+    z-index: 1050; /* Z-index alto */
+}
+
+/* ---------------------------------------------------- */
+/* 2. ESTILO VISUAL DEL MODAL (#basic-modal-content) */
+/* ---------------------------------------------------- */
+
+#basic-modal-content {
+    /* Tamaño fijo y centrado sobre el overlay */
+    max-width: 950px;
+    width: 100%;
+    
+    /* Apariencia */
+    background-color: #FFFFFF;
+    border-radius: 0.5rem; /* rounded-3 */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5); /* Sombra fuerte */
+    
+    /* Asegura que flote sobre el overlay, aunque d-flex ya lo hace */
+    position: relative; 
+}
+
+
+/* ---------------------------------------------------- */
+/* 3. ESTILOS DE FOCO Y BOTONES (Los elementos que fallan) */
+/* ---------------------------------------------------- */
+
+/* Foco de Input: El azul oscuro de Cuatrovientos (#1A467B) */
+.form-control:focus {
+    /* El valor que tú quieres es el azul oscuro principal */
+    border-color: #1A467B !important; 
+    
+    /* Sombra de foco (Glow) usando el azul oscuro */
+    box-shadow: 0 0 0 0.25rem rgba(26, 70, 123, 0.25) !important; 
+}
+
+/* Botón de Sign In (Para que quede blanco, redondeado y con borde sutil) */
+.custom-sign-in-btn {
+    /* Estilo del botón */
+    background-color: white;
+    color: #333;
+    border: 1px solid #ced4da;
+    border-radius: 50rem; /* rounded-pill */
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    
+    /* Arrow */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

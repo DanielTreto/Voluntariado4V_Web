@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { ModalService } from '../services/modal-service';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-modal-login',
@@ -8,25 +7,23 @@ import { ModalService } from '../services/modal-service';
   styleUrl: './modal-login.scss',
 })
 export class ModalLogin {
-  constructor(private modalService: ModalService) {}
+  onModalClick = output<String>(); 
 
+  // Este método emite un evento que el AppComponent captura
   closeModal(): void {
-    this.modalService.closeModal();
+    this.onModalClick.emit('close');
   }
 
-  openVolunteerRegister(): void {
-    this.modalService.openModal('volunteer');
+  login():void{
+    this.onModalClick.emit('register');
   }
 
-  openOrgRegister(): void {
-    this.modalService.openModal('organization');
+  openVolunteerRegister():void{
+    this.onModalClick.emit('register');
   }
 
-  login(): void {
-    // Lógica de inicio de sesión
-    // window.location.href = 'admin_dashboard.html';
-    // En Angular, usarías el Router: this.router.navigate(['/dashboard']);
-    console.log('Login attempt');
-    this.closeModal();
+  openOrgRegister():void{
+    this.onModalClick.emit('register');
   }
+
 }
