@@ -227,3 +227,32 @@ body {
 .bg-cuatro-dark-bg {
     background-color: var(--color-cuatrovientos-dark-bg) !important;
 }
+
+/* src/styles.scss */
+
+/* Estilos para las tarjetas de áreas de impacto */
+.impact-card {
+    background-color: var(--color-white);
+    color: #333;
+    /* Línea azul inferior */
+    border-bottom: 4px solid var(--color-cuatrovientos-main-blue);
+    /* Transiciones para el efecto hover */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Efecto Hover: Levantar la tarjeta y añadir sombra */
+.impact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Color de los iconos SVG dentro de la tarjeta */
+.impact-card svg {
+    color: var(--color-cuatrovientos-main-blue);
+}
+
+/* Clase de utilidad para el tamaño de los iconos (si es necesario) */
+.icon-40 {
+    width: 40px;
+    height: 40px;
+}
