@@ -1,0 +1,75 @@
+<div id="volunteer-register-modal" 
+    class="bg-white rounded-3 shadow-lg p-4 p-md-5 position-relative mx-auto" 
+    style="max-width: 600px; width: 95%; max-height: 85vh; overflow-y: auto;" 
+    (click)="$event.stopPropagation()">
+    
+    <button (click)="closeModal()" class="btn-close position-absolute top-0 end-0 m-3"></button>
+    <h2 class="fs-3 fw-bold text-center text-cuatro-dark-bg mb-4">Registro Voluntario</h2>
+    
+    <form (ngSubmit)="registerVolunteer()" class="space-y-3">
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="name" class="form-label small text-secondary">Nombre</label>
+                <input type="text" id="name" placeholder="Tu Nombre" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="surname" class="form-label small text-secondary">Apellidos</label>
+                <input type="text" id="surname" placeholder="Tus Apellidos" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <label for="email" class="form-label small text-secondary">E-mail</label>
+                <input type="email" id="email" placeholder="ejemplo@correo.com" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="password" class="form-label small text-secondary">Contraseña</label>
+                <input type="password" id="password" placeholder="Mín. 8 caracteres" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="confirm-password" class="form-label small text-secondary">Repetir Contraseña</label>
+                <input type="password" id="confirm-password" placeholder="Repite la contraseña" class="form-control" required>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="country" class="form-label small text-secondary">País</label>
+                <select id="country" class="form-select" required>
+                    <option value="">Selecciona tu país</option>
+                    <option value="es">España</option>
+                    </select>
+            </div>
+            <div class="col-md-6">
+                <label for="city" class="form-label small text-secondary">Ciudad</label>
+                <input type="text" id="city" placeholder="Tu Ciudad" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <label for="interests" class="form-label small text-secondary">Áreas de Interés</label>
+                <textarea id="interests" rows="3" placeholder="Ej: Medio ambiente, educación, arte digital..." class="form-control"></textarea>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+
+        <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="terms" required>
+            <label class="form-check-label small text-secondary" for="terms">
+                Acepto los <a href="#" class="text-primary text-decoration-none">Términos y Condiciones</a> y la política de privacidad.
+            </label>
+        </div>
+        
+        <button type="submit"
+            class="w-100 btn btn-lg bg-cuatro-main-blue text-white rounded-pill fw-bold py-2 custom-sign-in-btn">
+            Registrarse como Voluntario
+        </button>
+    </form>
+    
+    <div class="text-center mt-4">
+        <p class="small text-secondary mb-2">¿Ya tienes cuenta?</p>
+        <button (click)="openLoginModal()" class="btn btn-link text-primary text-decoration-none small">
+            Volver a Iniciar Sesión
+        </button>
+    </div>
+</div>

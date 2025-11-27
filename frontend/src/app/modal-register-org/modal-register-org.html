@@ -1,0 +1,70 @@
+<div id="org-register-modal" 
+    class="bg-white rounded-3 shadow-lg p-4 p-md-5 position-relative mx-auto" 
+    style="max-width: 600px; width: 95%; max-height: 85vh; overflow-y: auto;" 
+    (click)="$event.stopPropagation()">
+    
+    <button (click)="closeModal()" class="btn-close position-absolute top-0 end-0 m-3"></button>
+    <h2 class="fs-3 fw-bold text-center text-cuatro-dark-bg mb-4">Registro de Nueva Organización</h2>
+    
+    <form (ngSubmit)="registerOrganization()" class="space-y-3">
+        
+        <div class="row g-3">
+            <div class="col-12">
+                <label for="orgName" class="form-label small text-secondary">Nombre de la Organización</label>
+                <input type="text" id="orgName" placeholder="Razón Social Completa" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="nif" class="form-label small text-secondary">NIF/CIF</label>
+                <input type="text" id="nif" placeholder="NIF de la empresa" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="contactPerson" class="form-label small text-secondary">Persona de Contacto</label>
+                <input type="text" id="contactPerson" placeholder="Nombre del representante" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="locality" class="form-label small text-secondary">Localidad</label>
+                <input type="text" id="locality" placeholder="Ciudad/Municipio" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="activity" class="form-label small text-secondary">Actividad Económica</label>
+                <input type="text" id="activity" placeholder="Sector principal" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="phone" class="form-label small text-secondary">Teléfono</label>
+                <input type="tel" id="phone" placeholder="Número de contacto" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="email" class="form-label small text-secondary">E-mail Corporativo</label>
+                <input type="email" id="email" placeholder="contacto@organizacion.com" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="password" class="form-label small text-secondary">Contraseña</label>
+                <input type="password" id="password" placeholder="Para acceso al portal" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <label for="description" class="form-label small text-secondary">Descripción de la Actividad</label>
+                <textarea id="description" rows="3" placeholder="Breve descripción de la actividad que realiza la organización" class="form-control" required></textarea>
+            </div>
+            
+            <div class="col-12 form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="termsOrg" required>
+                <label class="form-check-label small text-secondary" for="termsOrg">
+                    Acepto los <a href="#" class="text-primary text-decoration-none">Términos y Condiciones</a>
+                </label>
+            </div>
+        </div>
+        
+        <button type="submit"
+            class="w-100 btn btn-lg bg-cuatro-main-blue text-white rounded-pill fw-bold py-2 custom-sign-in-btn"
+            style="background-color: var(--color-cuatrovientos-main-blue);">
+            Registrar Organización
+        </button>
+    </form>
+    
+    <div class="text-center mt-4">
+        <p class="small text-secondary mb-2">¿Ya tienes cuenta?</p>
+        <button (click)="openLoginModal()" class="btn btn-link text-primary text-decoration-none small">
+            Volver a Iniciar Sesión
+        </button>
+    </div>
+</div>

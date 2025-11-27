@@ -7,23 +7,30 @@ import { Component, output } from '@angular/core';
   styleUrl: './modal-login.scss',
 })
 export class ModalLogin {
-  onModalClick = output<String>(); 
+
+  onModalClick = output(); 
+
+  onRegisterVolClick = output();
+
+  onRegisterOrgClick = output();
+
+  onClose = output();
 
   // Este método emite un evento que el AppComponent captura
   closeModal(): void {
-    this.onModalClick.emit('close');
+    this.onClose.emit();
   }
 
   login():void{
-    this.onModalClick.emit('register');
+    this.onModalClick.emit();
   }
 
   openVolunteerRegister():void{
-    this.onModalClick.emit('register');
+    this.onRegisterVolClick.emit();
   }
 
   openOrgRegister():void{
-    this.onModalClick.emit('register');
+    this.onRegisterOrgClick.emit();
   }
 
 }

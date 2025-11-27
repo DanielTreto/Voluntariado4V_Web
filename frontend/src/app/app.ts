@@ -5,31 +5,34 @@ import { Header } from "./header/header";
 import { Footer } from "./footer/footer";
 import { HomePage } from "./home-page/home-page";
 import { ModalLogin } from "./modal-login/modal-login";
+import { ModalRegisterVol } from "./modal-register-vol/modal-register-vol";
+import { ModalRegisterOrg } from "./modal-register-org/modal-register-org";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer, HomePage, ModalLogin, CommonModule],
+  imports: [RouterOutlet, Header, Footer, HomePage, ModalLogin, CommonModule, ModalRegisterVol, ModalRegisterOrg],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
   protected readonly title = signal('frontend');
-  // 🌟 VARIABLE DE ESTADO SIMPLE 🌟
-  isModalOpen: boolean = false; 
+  activeModalType: string | null = null; 
 
-  constructor(private el: ElementRef) {} // Ya no necesitamos ModalService aquí
+  constructor(private el: ElementRef) {}
 
-  // Método para abrir el modal
   openModal(type: string): void {
-    // Si usaras varios modales, esta lógica elegiría cuál abrir
-    if (type === 'login') {
-        this.isModalOpen = true;
-    }
+    // Asigna el tipo de modal a la variable para mostrarlo en el template
+    this.activeModalType = type; 
   }
 
-  // Método para cerrar el modal
+  // Ahora el closeModal pone el estado en null
   closeModal(): void {
-    this.isModalOpen = false;
+    this.activeModalType = null;
+  }
+
+  // Método para manejar la navegación de vuelta desde el modal de registro
+  openLoginFromRegister(): void {
+    this.activeModalType = 'login';
   }
 
   // Cierra el modal si se hace clic en el overlay (fondo negro)

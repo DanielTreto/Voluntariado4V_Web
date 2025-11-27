@@ -8,14 +8,15 @@ import { Component, output } from '@angular/core';
   styleUrl: './header.scss',
 })
 export class Header {
-  onHeaderClick = output<String>(); 
+  onLoginClick = output(); 
+  onRegisterClick = output();
 
   // Este método emite un evento que el AppComponent captura
   openLogin(): void {
-    this.onHeaderClick.emit('login');
+    this.onLoginClick.emit();
   }
 
   openRegister():void{
-    this.onHeaderClick.emit('register');
+    this.onRegisterClick.emit();
   }
 }
