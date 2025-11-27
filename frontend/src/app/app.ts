@@ -1,12 +1,12 @@
 import { Component, ElementRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { Header } from "./header/header";
-import { Footer } from "./footer/footer";
-import { HomePage } from "./home-page/home-page";
-import { ModalLogin } from "./modal-login/modal-login";
-import { ModalRegisterVol } from "./modal-register-vol/modal-register-vol";
-import { ModalRegisterOrg } from "./modal-register-org/modal-register-org";
+import { Header } from "./components/organisms/header/header";
+import { Footer } from "./components/organisms/footer/footer";
+import { HomePage } from "./components/organisms/home-page/home-page";
+import { ModalLogin } from "./components/organisms/modal-login/modal-login";
+import { ModalRegisterVol } from "./components/organisms/modal-register-vol/modal-register-vol";
+import { ModalRegisterOrg } from "./components/organisms/modal-register-org/modal-register-org";
 
 @Component({
   selector: 'app-root',
