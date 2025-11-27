@@ -1,70 +1,108 @@
 <div id="org-register-modal" 
     class="bg-white rounded-3 shadow-lg p-4 p-md-5 position-relative mx-auto" 
-    style="max-width: 600px; width: 95%; max-height: 85vh; overflow-y: auto;" 
+    style=" width: 700px; max-height: 85vh; overflow-y: auto;" 
     (click)="$event.stopPropagation()">
     
     <button (click)="closeModal()" class="btn-close position-absolute top-0 end-0 m-3"></button>
-    <h2 class="fs-3 fw-bold text-center text-cuatro-dark-bg mb-4">Registro de Nueva Organización</h2>
+    <h2 class="fs-3 fw-bold text-center text-cuatro-dark-bg mb-4">Nueva Organización</h2>
     
     <form (ngSubmit)="registerOrganization()" class="space-y-3">
         
-        <div class="row g-3">
-            <div class="col-12">
-                <label for="orgName" class="form-label small text-secondary">Nombre de la Organización</label>
-                <input type="text" id="orgName" placeholder="Razón Social Completa" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="nif" class="form-label small text-secondary">NIF/CIF</label>
-                <input type="text" id="nif" placeholder="NIF de la empresa" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="contactPerson" class="form-label small text-secondary">Persona de Contacto</label>
-                <input type="text" id="contactPerson" placeholder="Nombre del representante" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="locality" class="form-label small text-secondary">Localidad</label>
-                <input type="text" id="locality" placeholder="Ciudad/Municipio" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="activity" class="form-label small text-secondary">Actividad Económica</label>
-                <input type="text" id="activity" placeholder="Sector principal" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="phone" class="form-label small text-secondary">Teléfono</label>
-                <input type="tel" id="phone" placeholder="Número de contacto" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="email" class="form-label small text-secondary">E-mail Corporativo</label>
-                <input type="email" id="email" placeholder="contacto@organizacion.com" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="password" class="form-label small text-secondary">Contraseña</label>
-                <input type="password" id="password" placeholder="Para acceso al portal" class="form-control" required>
-            </div>
-            <div class="col-12">
-                <label for="description" class="form-label small text-secondary">Descripción de la Actividad</label>
-                <textarea id="description" rows="3" placeholder="Breve descripción de la actividad que realiza la organización" class="form-control" required></textarea>
-            </div>
-            
-            <div class="col-12 form-check mb-4">
-                <input class="form-check-input" type="checkbox" id="termsOrg" required>
-                <label class="form-check-label small text-secondary" for="termsOrg">
-                    Acepto los <a href="#" class="text-primary text-decoration-none">Términos y Condiciones</a>
-                </label>
-            </div>
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </span>
+            <input type="text" id="orgName" placeholder="Nombre Completo" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.414L14.586 5A2 2 0 0115 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 2h2v2H6V6zm0 4h2v2H6v-2zm0 4h2v2H6v-2zm4-12h2V6h-2V4zm0 4h2v2h-2V8zm0 4h2v2h-2v-2z" clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <input type="text" id="nif" placeholder="NIF EMPRESA" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <input type="text" id="contactPerson" placeholder="Persona de Contacto" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <input type="text" id="locality" placeholder="Localidad" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 001.414 1.414L10 16.414l-1.293 1.293a1 1 0 001.414 1.414L14 16.414l1.293 1.293a1 1 0 001.414-1.414L15.414 16H18a2 2 0 002-2V5a1 1 0 000-2H3zm7 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <input type="text" id="activity" placeholder="Actividad Económica" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.774a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                </svg>
+            </span>
+            <input type="tel" id="phone" placeholder="Teléfono" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+            </span>
+            <input type="email" id="email" placeholder="Correo Electrónico" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="password" id="password" placeholder="Contraseña" class="form-control custom-input" required>
+        </div>
+
+        <div class="input-group mb-3 custom-input-group">
+            <span class="input-group-text custom-icon-span align-items-start pt-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm10.707 3.707a1 1 0 00-1.414-1.414L9 9.586 7.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+            </span>
+            <textarea id="description" rows="3" placeholder="Breve descripción de la actividad que realiza la org" class="form-control custom-input" required></textarea>
         </div>
         
         <button type="submit"
-            class="w-100 btn btn-lg bg-cuatro-main-blue text-white rounded-pill fw-bold py-2 custom-sign-in-btn"
+            class="w-100 btn btn-lg text-white rounded-lg fw-bold py-2 custom-register-btn"
             style="background-color: var(--color-cuatrovientos-main-blue);">
-            Registrar Organización
+            Registrarse
         </button>
     </form>
     
-    <div class="text-center mt-4">
-        <p class="small text-secondary mb-2">¿Ya tienes cuenta?</p>
-        <button (click)="openLoginModal()" class="btn btn-link text-primary text-decoration-none small">
-            Volver a Iniciar Sesión
-        </button>
+    <div class="text-center mt-3">
+        <p class="small text-secondary mb-2">¿Ya tienes una cuenta?
+            <button (click)="openLoginModal()" class="btn btn-link text-primary text-decoration-none small">
+                Iniciar Sesión
+            </button>
+        </p>
     </div>
 </div>
