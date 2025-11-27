@@ -1,0 +1,30 @@
+.table-custom {
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
+
+.table-custom tbody tr {
+    background-color: var(--vh-sidebar-bg);
+    border-bottom: 1px solid #e9ecef;
+    transition: box-shadow 0.2s;
+}
+
+.table-custom tbody tr:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table-custom th,
+.table-custom td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    border: none;
+}
+
+.table-custom th {
+    color: var(--vh-link-color);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding-top: 0;
+}
