@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Actividad;
+use App\Entity\Organizacion;
+use App\Repository\ActivityRepository;
+use App\Repository\OrganizationRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+#[Route('/api')]
+class ActivityController extends AbstractController
+{
+    #[Route('/activities', name: 'api_activities_index', methods: ['GET'])]
+    public function index(ActivityRepository $activityRepository, OrganizationRepository $orgRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // 1. Auto-update status for finished activities
+        $activities = $activityRepository->findAll();
+        $now = new \DateTime();
+        $updated = false;
+
+        foreach ($activities as $act) {
+            if ($act->getESTADO() === 'EN_PROGRESO' && $act->getFECHA_FIN() < $now) {
+                $act->setESTADO('FINALIZADA');
+                $updated = true;
+            }
+        }
+
+        if ($updated) {
+            $entityManager->flush();
+        }
+
+        // 2. Prepare response
+        $data = [];
+        foreach ($activities as $act) {
+            $org = $orgRepository->find($act->getCODORG());
+            $data[] = [
+                'id' => $act->getCODACT(),
+                'title' => $act->getNOMBRE(),
+                'description' => $act->getDESCRIPCION(),
+                'location' => 'Ubicación Placeholder', // Missing location in BD
+                'date' => $act->getFECHA_INICIO()->format('Y-m-d'),
+                'endDate' => $act->getFECHA_FIN()->format('Y-m-d'),
+                'image' => 'assets/images/activity-1.jpg', // Placeholder
+                'organization' => $org ? [
+                    'name' => $org->getNOMBRE(),
+                    'logo' => 'assets/images/org-default.png'
+                ] : null,
+                'volunteers' => [], // Missing relation logic for now
+                'type' => 'Social', // Placeholder, need join with TIPO_ACTIVIDAD
+                'status' => $act->getESTADO(),
+            ];
+        }
+
+        $response = new JsonResponse($data);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        return $response;
+    }
+
+    #[Route('/activities', name: 'api_activities_create', methods: ['POST'])]
+    public function create(Request $request, EntityManagerInterface $entityManager, OrganizationRepository $orgRepository, ValidatorInterface $validator): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return new JsonResponse(['error' => 'Invalid JSON'], 400);
+        }
+
+        $actividad = new Actividad();
+        $actividad->setNOMBRE($data['title'] ?? '');
+        $actividad->setDESCRIPCION($data['description'] ?? '');
+
+        try {
+            $actividad->setFECHA_INICIO(new \DateTime($data['date']));
+            // Assume 2 hour session if not provided, or logic for end date
+            $endDate = new \DateTime($data['date']);
+            if (isset($data['duration'])) {
+                // Format 'H:i' -> 'H:i:00'
+                $actividad->setDURACION_SESION($data['duration'] . ':00');
+            } else {
+                $actividad->setDURACION_SESION('02:00:00');
+            }
+            $actividad->setFECHA_FIN($endDate); // Simplification: starts and ends same day
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Invalid date format'], 400);
+        }
+
+        $actividad->setN_MAX_VOLUNTARIOS(10); // Default or from request
+        $actividad->setESTADO('PENDIENTE');
+
+        // Link Organization
+        if (isset($data['organizationId'])) {
+            $org = $orgRepository->find($data['organizationId']);
+            if ($org) {
+                $actividad->setCODORG($org->getCODORG());
+            }
+        } else {
+            // Fallback for testing if no logic provided
+            // In real app, authenticated user's org
+            $orgs = $orgRepository->findAll();
+            if (count($orgs) > 0) {
+                $actividad->setCODORG($orgs[0]->getCODORG());
+            }
+        }
+
+        // Validation
+        $errors = $validator->validate($actividad);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            return new JsonResponse(['errors' => $errorMessages], 400);
+        }
+
+        $entityManager->persist($actividad);
+        $entityManager->flush();
+
+        $response = new JsonResponse(['status' => 'Activity created', 'id' => $actividad->getCODACT()], 201);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+
+        return $response;
+    }
+
+    #[Route('/activities/{id}/status', name: 'api_activities_update_status', methods: ['PATCH'])]
+    public function updateStatus(int $id, Request $request, EntityManagerInterface $entityManager, ActivityRepository $activityRepository): JsonResponse
+    {
+        $act = $activityRepository->find($id);
+
+        if (!$act) {
+            return new JsonResponse(['error' => 'Activity not found'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $newStatus = $data['status'] ?? null;
+
+        $validStatuses = ['PENDIENTE', 'EN_PROGRESO', 'DENEGADA', 'FINALIZADA'];
+
+        if (!$newStatus || !in_array($newStatus, $validStatuses)) {
+            return new JsonResponse(['error' => 'Invalid status. Allowed: ' . implode(', ', $validStatuses)], 400);
+        }
+
+        $act->setESTADO($newStatus);
+        $entityManager->flush();
+
+        $response = new JsonResponse(['status' => 'Activity status updated', 'newStatus' => $newStatus], 200);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        return $response;
+    }
+
+    #[Route('/activities', name: 'api_activities_options', methods: ['OPTIONS'])]
+    public function options(): JsonResponse
+    {
+        $response = new JsonResponse(null, 204);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+        return $response;
+    }
+
+    #[Route('/activities/{id}/status', name: 'api_activities_update_status_options', methods: ['OPTIONS'])]
+    public function updateStatusOptions(): JsonResponse
+    {
+        $response = new JsonResponse(null, 204);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+        return $response;
+    }
+}

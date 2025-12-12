@@ -98,7 +98,68 @@ class VolunteerController extends AbstractController
     {
         $response = new JsonResponse(null, 204);
         $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+        return $response;
+    }
+
+    #[Route('/volunteers/{id}', name: 'api_volunteers_delete', methods: ['DELETE'])]
+    public function delete(int $id, EntityManagerInterface $entityManager, VolunteerRepository $volunteerRepository): JsonResponse
+    {
+        $volunteer = $volunteerRepository->find($id);
+
+        if (!$volunteer) {
+            return new JsonResponse(['error' => 'Volunteer not found'], 404);
+        }
+
+        $entityManager->remove($volunteer);
+        $entityManager->flush();
+
+        $response = new JsonResponse(['status' => 'Volunteer deleted'], 200);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        return $response;
+    }
+
+    #[Route('/volunteers/{id}', name: 'api_volunteers_item_options', methods: ['OPTIONS'])]
+    public function itemOptions(): JsonResponse
+    {
+        $response = new JsonResponse(null, 204);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+        return $response;
+    }
+    #[Route('/volunteers/{id}/status', name: 'api_volunteers_update_status', methods: ['PATCH'])]
+    public function updateStatus(int $id, Request $request, EntityManagerInterface $entityManager, VolunteerRepository $volunteerRepository): JsonResponse
+    {
+        $volunteer = $volunteerRepository->find($id);
+
+        if (!$volunteer) {
+            return new JsonResponse(['error' => 'Volunteer not found'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $newStatus = $data['status'] ?? null;
+
+        $validStatuses = ['ACTIVO', 'SUSPENDIDO', 'PENDIENTE'];
+
+        if (!$newStatus || !in_array($newStatus, $validStatuses)) {
+            return new JsonResponse(['error' => 'Invalid status. Allowed values: ' . implode(', ', $validStatuses)], 400);
+        }
+
+        $volunteer->setESTADO($newStatus);
+        $entityManager->flush();
+
+        $response = new JsonResponse(['status' => 'Volunteer status updated', 'newStatus' => $newStatus], 200);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        return $response;
+    }
+    #[Route('/volunteers/{id}/status', name: 'api_volunteers_update_status_options', methods: ['OPTIONS'])]
+    public function updateStatusOptions(): JsonResponse
+    {
+        $response = new JsonResponse(null, 204);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
         return $response;
     }

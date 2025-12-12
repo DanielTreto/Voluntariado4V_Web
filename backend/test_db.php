@@ -18,7 +18,11 @@ if (function_exists('sqlsrv_connect')) {
         sqlsrv_close($conn);
     } else {
         echo "SQLSRV Connection failed.\n";
-        print_r(sqlsrv_errors());
+        if (function_exists('sqlsrv_errors')) {
+            print_r(sqlsrv_errors());
+        } else {
+            echo "Cannot retrieve errors: sqlsrv_errors function undefined.\n";
+        }
     }
 } else {
     echo "Function sqlsrv_connect does not exist.\n";

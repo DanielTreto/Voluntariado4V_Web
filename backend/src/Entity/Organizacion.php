@@ -13,7 +13,7 @@ class Organizacion
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $CODORG = null;
 
     #[ORM\Column(length: 50)]
@@ -49,6 +49,10 @@ class Organizacion
     #[ORM\Column(length: 500, nullable: true)]
     #[Assert\Length(max: 500)]
     private ?string $DESCRIPCION = null;
+
+    #[ORM\Column(length: 20)]
+    #[Assert\Choice(choices: ['ACTIVO', 'SUSPENDIDO', 'PENDIENTE'])]
+    private ?string $ESTADO = 'PENDIENTE';
 
     public function getCODORG(): ?int
     {
@@ -129,6 +133,17 @@ class Organizacion
     public function setDESCRIPCION(?string $DESCRIPCION): static
     {
         $this->DESCRIPCION = $DESCRIPCION;
+        return $this;
+    }
+
+    public function getESTADO(): ?string
+    {
+        return $this->ESTADO;
+    }
+
+    public function setESTADO(string $ESTADO): static
+    {
+        $this->ESTADO = $ESTADO;
         return $this;
     }
 }

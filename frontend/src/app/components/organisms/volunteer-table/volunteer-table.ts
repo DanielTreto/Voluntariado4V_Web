@@ -78,14 +78,10 @@ export class VolunteerTableComponent implements OnInit {
   }
 
   get filteredVolunteers() {
-    // TEMPORARY: Return all volunteers to debug connection
-    return this.volunteers; 
-    /*
     if (this.activeTab === 'requests') {
       return this.volunteers.filter(v => v.status === 'pending');
     }
-    return this.volunteers.filter(v => v.status !== 'pending');
-    */
+    return this.volunteers.filter(v => v.status === 'active');
   }
 
   setTab(tab: 'requests' | 'registered') {
@@ -102,16 +98,50 @@ export class VolunteerTableComponent implements OnInit {
 
   deactivateVolunteer() {
     if (this.volunteerToDeactivate) {
-      this.volunteerToDeactivate.status = 'suspended';
-      this.volunteerToDeactivate = null;
+      this.apiService.updateVolunteerStatus(this.volunteerToDeactivate.id, 'SUSPENDIDO').subscribe({
+        next: () => {
+          this.volunteerToDeactivate!.status = 'suspended';
+          // Move out of registered list if we only show active ones there
+          // this.volunteers = this.volunteers.filter(v => v.id !== this.volunteerToDeactivate!.id); 
+          // However, if we want to show suspended in registered list but marked, we keep it. 
+          // The request says "si das a denegar que pasen a estado 'suspended' y tambien dejen de aparecer" 
+          // This usually applies to requests.
+          // For registered users being deactivated, usually they should also disappear or go to a 'suspended' tab.
+          // Based on "Registered" tab potentially showing active only, let's update local state so filter catches it.
+          // The filtering logic `v.status === 'active'` will hide it automatically.
+          this.volunteerToDeactivate = null;
+        },
+        error: (err) => {
+           console.error('Error suspending volunteer', err);
+           this.errorMessage = 'Error al suspender voluntario: ' + err.message;
+        }
+      });
     }
   }
 
   acceptVolunteer(volunteer: Volunteer) {
-    volunteer.status = 'active';
+    this.apiService.updateVolunteerStatus(volunteer.id, 'ACTIVO').subscribe({
+      next: () => {
+        volunteer.status = 'active';
+      },
+      error: (err) => {
+        console.error('Error accepting volunteer', err);
+        this.errorMessage = 'Error al aceptar voluntario: ' + err.message;
+      }
+    });
   }
 
   denyVolunteer(volunteer: Volunteer) {
-    this.volunteers = this.volunteers.filter(v => v.id !== volunteer.id);
+    if (confirm(`¿Estás seguro de que deseas denegar a ${volunteer.name}?`)) {
+      this.apiService.updateVolunteerStatus(volunteer.id, 'SUSPENDIDO').subscribe({
+        next: () => {
+          volunteer.status = 'suspended';
+        },
+        error: (err) => {
+          console.error('Error denying volunteer', err);
+          this.errorMessage = 'Error al denegar voluntario: ' + err.message;
+        }
+      });
+    }
   }
 }

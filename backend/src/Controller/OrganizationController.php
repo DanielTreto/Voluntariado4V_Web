@@ -30,6 +30,7 @@ class OrganizationController extends AbstractController
                 'sector' => $org->getSECTOR(),
                 'scope' => $org->getAMBITO(),
                 'description' => $org->getDESCRIPCION(),
+                'status' => $org->getESTADO(),
             ];
         }
 
@@ -55,6 +56,7 @@ class OrganizationController extends AbstractController
         $org->setSECTOR($data['sector'] ?? '');
         $org->setAMBITO($data['scope'] ?? '');
         $org->setDESCRIPCION($data['description'] ?? '');
+        $org->setESTADO('PENDIENTE');
 
         // Validation
         $errors = $validator->validate($org);
@@ -85,6 +87,42 @@ class OrganizationController extends AbstractController
         $response = new JsonResponse(null, 204);
         $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
+        return $response;
+    }
+
+    #[Route('/organizations/{id}/status', name: 'api_organizations_update_status', methods: ['PATCH'])]
+    public function updateStatus(int $id, Request $request, EntityManagerInterface $entityManager, OrganizationRepository $orgRepository): JsonResponse
+    {
+        $org = $orgRepository->find($id);
+
+        if (!$org) {
+            return new JsonResponse(['error' => 'Organization not found'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $newStatus = $data['status'] ?? null;
+
+        $validStatuses = ['ACTIVO', 'SUSPENDIDO', 'PENDIENTE'];
+
+        if (!$newStatus || !in_array($newStatus, $validStatuses)) {
+            return new JsonResponse(['error' => 'Invalid status. Allowed values: ' . implode(', ', $validStatuses)], 400);
+        }
+
+        $org->setESTADO($newStatus);
+        $entityManager->flush();
+
+        $response = new JsonResponse(['status' => 'Organization status updated', 'newStatus' => $newStatus], 200);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        return $response;
+    }
+
+    #[Route('/organizations/{id}/status', name: 'api_organizations_update_status_options', methods: ['OPTIONS'])]
+    public function updateStatusOptions(): JsonResponse
+    {
+        $response = new JsonResponse(null, 204);
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
         return $response;
     }
