@@ -13,11 +13,11 @@ import { UserProfileComponent } from '../../molecules/user-profile/user-profile'
 export class SidebarComponent {
   links = [
     { label: 'Dashboard', icon: 'bi-grid-fill', route: '/dashboard' },
-    { label: 'Volunteers', icon: 'bi-people-fill', route: '/volunteers' },
-    { label: 'Organizations', icon: 'bi-building-fill', route: '/organizations' },
-    { label: 'Activities', icon: 'bi-list-check', route: '/activities' },
-    { label: 'Events', icon: 'bi-calendar-event-fill', route: '/events' },
-    { label: 'Reports', icon: 'bi-bar-chart-fill', route: '/reports' },
-    { label: 'Settings', icon: 'bi-gear-fill', route: '/settings' }
+    { label: 'Volunteers', icon: 'bi-people-fill', route: '/dashboard/volunteers' },
+    { label: 'Organizations', icon: 'bi-building-fill', route: '/dashboard/organizations' },
+    { label: 'Activities', icon: 'bi-list-check', route: '/dashboard/activities' },
+    { label: 'Events', icon: 'bi-calendar-event-fill', route: '/dashboard/events' },
+    { label: 'Reports', icon: 'bi-bar-chart-fill', route: '/dashboard/reports' },
+    { label: 'Settings', icon: 'bi-gear-fill', route: '/dashboard/settings' }
   ];
 }

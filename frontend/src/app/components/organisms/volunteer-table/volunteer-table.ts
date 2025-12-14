@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarComponent } from '../../atoms/avatar/avatar';
 import { BadgeComponent } from '../../atoms/badge/badge';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../services/api.service';
 
 interface Volunteer {
   id: number;
@@ -27,94 +28,60 @@ interface Volunteer {
   templateUrl: './volunteer-table.html',
   styleUrl: './volunteer-table.css'
 })
-export class VolunteerTableComponent {
+export class VolunteerTableComponent implements OnInit {
+  private apiService = inject(ApiService);
   activeTab: 'requests' | 'registered' = 'requests';
   selectedVolunteer: Volunteer | null = null;
   volunteerToDeactivate: Volunteer | null = null;
+  errorMessage: string = '';
 
-  volunteers: Volunteer[] = [
-    {
-      id: 1,
-      name: 'Jane Doe',
-      project: 'Community Garden Project',
-      email: 'jane.doe@example.com',
-      phone: '(555) 123-4567',
-      lastActivity: '2023-10-26',
-      status: 'active',
-      avatar: 'assets/images/volunteer-avatar.png',
-      dni: '12345678A',
-      address: '123 Main St, Springfield',
-      course: 'Computer Science',
-      availability: ['Lunes 0-1h', 'Miércoles 0-1h'],
-      interests: ['Medio Ambiente', 'Educación']
-    },
-    {
-      id: 2,
-      name: 'John Smith',
-      project: 'Food Bank Initiative',
-      email: 'john.smith@example.com',
-      phone: '(555) 987-6543',
-      lastActivity: '2023-11-01',
-      status: 'active',
-      avatar: 'assets/images/volunteer-avatar.png',
-      dni: '87654321B',
-      address: '456 Elm St, Springfield',
-      course: 'Social Work',
-      availability: ['Martes 0-1h', 'Jueves 0-1h'],
-      interests: ['Salud', 'Asistencia Social']
-    },
-    {
-      id: 3,
-      name: 'Emily Johnson',
-      project: 'Literacy Program',
-      email: 'emily.j@example.com',
-      phone: '(555) 456-7890',
-      lastActivity: '2023-10-15',
-      status: 'suspended',
-      avatar: 'assets/images/volunteer-avatar.png',
-      dni: '11223344C',
-      address: '789 Oak St, Springfield',
-      course: 'Education',
-      availability: ['Viernes 0-1h'],
-      interests: ['Educación']
-    },
-    {
-      id: 4,
-      name: 'Michael Brown',
-      project: 'Pending Assignment',
-      email: 'michael.b@example.com',
-      phone: '(555) 222-3333',
-      lastActivity: '2023-11-20',
-      status: 'pending',
-      avatar: 'assets/images/volunteer-avatar.png',
-      dni: '55667788D',
-      address: '321 Pine St, Springfield',
-      course: 'Engineering',
-      availability: ['Lunes 0-1h', 'Viernes 0-1h'],
-      interests: ['Técnico', 'Medio Ambiente']
-    },
-    {
-      id: 5,
-      name: 'Sarah Davis',
-      project: 'Pending Assignment',
-      email: 'sarah.d@example.com',
-      phone: '(555) 444-5555',
-      lastActivity: '2023-11-25',
-      status: 'pending',
-      avatar: 'assets/images/volunteer-avatar.png',
-      dni: '99887766E',
-      address: '654 Maple St, Springfield',
-      course: 'Nursing',
-      availability: ['Sábado 0-1h'],
-      interests: ['Salud']
-    }
-  ];
+  volunteers: Volunteer[] = [];
+
+  ngOnInit() {
+    this.loadVolunteers();
+  }
+
+  loadVolunteers() {
+    this.apiService.getVolunteers().subscribe({
+      next: (data) => {
+        console.log('Volunteers received:', data);
+        this.volunteers = data.map((v: any) => ({
+          id: v.id,
+          name: `${v.name} ${v.surname1 || ''} ${v.surname2 || ''}`.trim(),
+          project: v.course || 'Sin Asignar',
+          email: v.email,
+          phone: v.phone,
+          lastActivity: 'Reciente',
+          status: this.mapStatus(v.status),
+          avatar: 'assets/images/volunteer-avatar.png',
+          dni: v.dni,
+          address: 'No disponible', 
+          course: v.course,
+          availability: [], 
+          interests: []
+        }));
+      },
+      error: (err) => {
+        console.error('Error loading volunteers', err);
+        this.errorMessage = 'Error loading data: ' + err.message;
+      }
+    });
+  }
+
+  mapStatus(status: string): 'active' | 'pending' | 'inactive' | 'org-pending' | 'suspended' | 'custom' {
+    const map: any = {
+      'PENDIENTE': 'pending',
+      'ACTIVO': 'active',
+      'SUSPENDIDO': 'suspended'
+    };
+    return map[status] || 'pending';
+  }
 
   get filteredVolunteers() {
     if (this.activeTab === 'requests') {
       return this.volunteers.filter(v => v.status === 'pending');
     }
-    return this.volunteers.filter(v => v.status !== 'pending');
+    return this.volunteers.filter(v => v.status === 'active');
   }
 
   setTab(tab: 'requests' | 'registered') {
@@ -131,16 +98,50 @@ export class VolunteerTableComponent {
 
   deactivateVolunteer() {
     if (this.volunteerToDeactivate) {
-      this.volunteerToDeactivate.status = 'suspended';
-      this.volunteerToDeactivate = null;
+      this.apiService.updateVolunteerStatus(this.volunteerToDeactivate.id, 'SUSPENDIDO').subscribe({
+        next: () => {
+          this.volunteerToDeactivate!.status = 'suspended';
+          // Move out of registered list if we only show active ones there
+          // this.volunteers = this.volunteers.filter(v => v.id !== this.volunteerToDeactivate!.id); 
+          // However, if we want to show suspended in registered list but marked, we keep it. 
+          // The request says "si das a denegar que pasen a estado 'suspended' y tambien dejen de aparecer" 
+          // This usually applies to requests.
+          // For registered users being deactivated, usually they should also disappear or go to a 'suspended' tab.
+          // Based on "Registered" tab potentially showing active only, let's update local state so filter catches it.
+          // The filtering logic `v.status === 'active'` will hide it automatically.
+          this.volunteerToDeactivate = null;
+        },
+        error: (err) => {
+           console.error('Error suspending volunteer', err);
+           this.errorMessage = 'Error al suspender voluntario: ' + err.message;
+        }
+      });
     }
   }
 
   acceptVolunteer(volunteer: Volunteer) {
-    volunteer.status = 'active';
+    this.apiService.updateVolunteerStatus(volunteer.id, 'ACTIVO').subscribe({
+      next: () => {
+        volunteer.status = 'active';
+      },
+      error: (err) => {
+        console.error('Error accepting volunteer', err);
+        this.errorMessage = 'Error al aceptar voluntario: ' + err.message;
+      }
+    });
   }
 
   denyVolunteer(volunteer: Volunteer) {
-    this.volunteers = this.volunteers.filter(v => v.id !== volunteer.id);
+    if (confirm(`¿Estás seguro de que deseas denegar a ${volunteer.name}?`)) {
+      this.apiService.updateVolunteerStatus(volunteer.id, 'SUSPENDIDO').subscribe({
+        next: () => {
+          volunteer.status = 'suspended';
+        },
+        error: (err) => {
+          console.error('Error denying volunteer', err);
+          this.errorMessage = 'Error al denegar voluntario: ' + err.message;
+        }
+      });
+    }
   }
 }

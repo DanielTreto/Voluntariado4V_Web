@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BadgeComponent } from '../../atoms/badge/badge';
+import { ApiService } from '../../../services/api.service';
 
 interface Organization {
   id: number;
@@ -26,75 +27,91 @@ interface Organization {
   templateUrl: './organization-list.html',
   styleUrl: './organization-list.css'
 })
-export class OrganizationListComponent {
+export class OrganizationListComponent implements OnInit {
+  private apiService = inject(ApiService);
   activeTab: 'pending' | 'registered' = 'pending';
   selectedOrg: Organization | null = null;
   orgToSuspend: Organization | null = null;
+  errorMessage: string = '';
 
-  pendingOrgs: Organization[] = [
-    {
-      id: 1,
-      name: 'Future Horizons NGO',
-      email: 'contact@future.org',
-      date: '2025-11-20',
-      status: 'org-pending',
-      logo: 'assets/images/org-logo-1.png',
-      nif: 'B12345678',
-      contactPerson: 'Alice Walker',
-      location: 'Madrid',
-      economicActivity: 'Non-Profit',
-      phone: '+34 600 111 222',
-      description: 'Dedicated to providing educational resources to underprivileged communities.'
-    }
-  ];
+  organizations: Organization[] = [];
 
-  registeredOrgs: Organization[] = [
-    {
-      id: 2,
-      name: 'Soluciones Globales A.C.',
-      email: 'info@globales.com',
-      volunteersCreated: 12,
-      status: 'active',
-      logo: 'assets/images/org-logo-2.png',
-      nif: 'A87654321',
-      contactPerson: 'Robert Smith',
-      location: 'Barcelona',
-      economicActivity: 'Environmental Services',
-      phone: '+34 600 333 444',
-      description: 'Focused on sustainable development and environmental protection projects.'
-    },
-    {
-      id: 3,
-      name: 'Community Helpers',
-      email: 'hello@helpers.org',
-      volunteersCreated: 5,
-      status: 'active',
-      logo: 'assets/images/org-logo-1.png',
-      nif: 'G11223344',
-      contactPerson: 'Maria Garcia',
-      location: 'Valencia',
-      economicActivity: 'Social Work',
-      phone: '+34 600 555 666',
-      description: 'Local community support for elderly and disabled citizens.'
-    }
-  ];
+  ngOnInit() {
+    this.loadOrganizations();
+  }
+
+  loadOrganizations() {
+    this.apiService.getOrganizations().subscribe({
+      next: (data) => {
+        console.log('Organizations received:', data);
+        this.organizations = data.map((org: any) => ({
+          id: org.id,
+          name: org.name,
+          email: org.email,
+          date: 'N/A', // Backend doesn't provide date yet
+          volunteersCreated: 0, // Backend doesn't provide this yet
+          status: this.mapStatus(org.status),
+          logo: 'assets/images/org-default.png',
+          nif: 'N/A',
+          contactPerson: 'N/A',
+          location: org.scope,
+          economicActivity: org.sector,
+          phone: org.phone,
+          description: org.description
+        }));
+      },
+      error: (err) => {
+        console.error('Error loading organizations', err);
+        this.errorMessage = 'Error loading data: ' + err.message;
+      }
+    });
+  }
+
+  mapStatus(status: string): 'active' | 'pending' | 'org-pending' | 'inactive' | 'suspended' {
+    const map: any = {
+      'PENDIENTE': 'org-pending',
+      'ACTIVO': 'active',
+      'SUSPENDIDO': 'suspended'
+    };
+    return map[status] || 'pending';
+  }
+
+  get pendingOrgs(): Organization[] {
+    return this.organizations.filter(o => o.status === 'org-pending' || o.status === 'pending');
+  }
+
+  get registeredOrgs(): Organization[] {
+    return this.organizations.filter(o => o.status === 'active');
+  }
 
   setActiveTab(tab: 'pending' | 'registered') {
     this.activeTab = tab;
   }
 
   acceptOrg(org: Organization) {
-    this.pendingOrgs = this.pendingOrgs.filter(o => o.id !== org.id);
-    const newOrg: Organization = {
-      ...org,
-      status: 'active',
-      volunteersCreated: 0
-    };
-    this.registeredOrgs.push(newOrg);
+    this.apiService.updateOrganizationStatus(org.id, 'ACTIVO').subscribe({
+      next: () => {
+        org.status = 'active';
+      },
+      error: (err) => {
+        console.error('Error accepting organization', err);
+        this.errorMessage = 'Error al aceptar organización: ' + err.message;
+      }
+    });
   }
 
   denyOrg(org: Organization) {
-    this.pendingOrgs = this.pendingOrgs.filter(o => o.id !== org.id);
+    if (confirm(`¿Estás seguro de que deseas denegar a ${org.name}?`)) {
+      this.apiService.updateOrganizationStatus(org.id, 'SUSPENDIDO').subscribe({
+        next: () => {
+          org.status = 'suspended';
+        },
+        error: (err) => {
+          console.error('Error denying organization', err);
+          this.errorMessage = 'Error al denegar organización: ' + err.message;
+        }
+      });
+    }
   }
 
   openDetails(org: Organization) {
@@ -107,8 +124,16 @@ export class OrganizationListComponent {
 
   suspendOrg() {
     if (this.orgToSuspend) {
-      this.orgToSuspend.status = 'suspended';
-      this.orgToSuspend = null;
+      this.apiService.updateOrganizationStatus(this.orgToSuspend.id, 'SUSPENDIDO').subscribe({
+        next: () => {
+          this.orgToSuspend!.status = 'suspended';
+          this.orgToSuspend = null;
+        },
+        error: (err) => {
+          console.error('Error suspending organization', err);
+          this.errorMessage = 'Error al suspender organización: ' + err.message;
+        }
+      });
     }
   }
 }

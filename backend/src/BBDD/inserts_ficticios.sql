@@ -8,13 +8,13 @@ GO
 
 -- 1. INSERTAR DATOS EN TABLA ORGANIZACION (AHORA AQUÍ)
 -- Al ser IDENTITY(1,1) y ser la primera carga, se generarán los IDs 1 al 5.
-INSERT INTO ORGANIZACION (NOMBRE, TIPO_ORG, CORREO, TELEFONO, SECTOR, AMBITO, DESCRIPCION)
+INSERT INTO ORGANIZACION (NOMBRE, TIPO_ORG, CORREO, TELEFONO, SECTOR, AMBITO, DESCRIPCION, ESTADO)
 VALUES
-('AMAVIR', 'FUNDACION', 'amavir@example.com', '600000001', 'SALUD', 'LOCAL', 'Organización dedicada a la salud de los mayores.'),
-('ANA', 'ONG', 'ana@example.com', '600000002', 'SOCIAL', 'REGIONAL', 'ONG enfocada en la ayuda social.'),
-('CUATROVIENTOS', 'ASOCIACION', 'cuatrocientos@example.com', '600000003', 'EDUCATIVO', 'NACIONAL', 'Asociación educativa.'),
-('SOLERA', 'ENTIDAD PÚBLICA', 'solera@example.com', '600000004', 'AMBIENTAL', 'INTERNACIONAL', 'Entidad pública ambiental.'),
-('UNZUTXIKI', 'OTRA', 'unzutxiki@example.com', '600000005', 'CULTURAL', 'LOCAL', 'Organización cultural local.');
+('AMAVIR', 'FUNDACIÓN', 'amavir@example.com', '600000001', 'SALUD', 'LOCAL', 'Organización dedicada a la salud de los mayores.', 'ACTIVO'),
+('ANA', 'ONG', 'ana@example.com', '600000002', 'SOCIAL', 'REGIONAL', 'ONG enfocada en la ayuda social.', 'ACTIVO'),
+('CUATROVIENTOS', 'ASOCIACIÓN', 'cuatrocientos@example.com', '600000003', 'EDUCATIVO', 'NACIONAL', 'Asociación educativa.', 'ACTIVO'),
+('SOLERA', 'ENTIDAD PÚBLICA', 'solera@example.com', '600000004', 'AMBIENTAL', 'INTERNACIONAL', 'Entidad pública ambiental.', 'PENDIENTE'),
+('UNZUTXIKI', 'OTRA', 'unzutxiki@example.com', '600000005', 'CULTURAL', 'LOCAL', 'Organización cultural local.', 'ACTIVO');
 GO
 
 -- 2. INSERTAR DATOS EN TABLA VOLUNTARIO (READAPTADOS)
@@ -29,13 +29,16 @@ VALUES
 GO
 
 -- 3. INSERTAR DATOS EN TABLA ACTIVIDAD
-INSERT INTO ACTIVIDAD (NOMBRE, DURACION_SESION, FECHA_INICIO, FECHA_FIN, N_MAX_VOLUNTARIOS, CODORG, DESCRIPCION)
+INSERT INTO ACTIVIDAD (NOMBRE, DURACION_SESION, FECHA_INICIO, FECHA_FIN, N_MAX_VOLUNTARIOS, CODORG, DESCRIPCION, ESTADO)
 VALUES
-('ACTIVIDAD1', '02:00:00', '2023-10-01', '2023-10-02', 10, 1, 'Taller de salud para mayores'),
-('ACTIVIDAD2','01:30:00', '2023-11-15', '2023-11-15', 5, 2, 'Reparto de alimentos'),
-('ACTIVIDAD3','03:00:00', '2023-12-01', '2023-12-03', 20, 3, 'Jornada educativa'),
-('ACTIVIDAD4','01:00:00', '2024-01-10', '2024-01-10', 15, 4, 'Limpieza de playa'),
-('ACTIVIDAD5','02:30:00', '2024-02-20', '2024-02-21', 8, 5, 'Festival cultural');
+('ACTIVIDAD1', '02:00:00', '2023-10-01', '2023-10-02', 10, 1, 'Taller de salud para mayores', 'FINALIZADA'),
+('ACTIVIDAD2','01:30:00', '2023-11-15', '2023-11-15', 5, 2, 'Reparto de alimentos', 'FINALIZADA'),
+('ACTIVIDAD3','03:00:00', '2023-12-01', '2023-12-03', 20, 3, 'Jornada educativa', 'FINALIZADA'),
+('ACTIVIDAD4','01:00:00', '2024-01-10', '2024-01-10', 15, 4, 'Limpieza de playa', 'FINALIZADA'),
+('ACTIVIDAD5','02:30:00', '2024-02-20', '2024-02-21', 8, 5, 'Festival cultural', 'FINALIZADA'),
+('ACTIVIDAD6','04:00:00', '2026-05-01', '2026-05-01', 12, 1, 'Maratón Solidario', 'EN_PROGRESO'),
+('ACTIVIDAD7','02:00:00', '2026-06-15', '2026-06-20', 6, 2, 'Curso de Cocina Saludable', 'PENDIENTE'),
+('ACTIVIDAD8','03:00:00', '2026-07-10', '2026-07-12', 10, 3, 'Campamento Urbano', 'PENDIENTE');
 GO
 
 -- 4. INSERTAR DATOS RELACIONADOS
